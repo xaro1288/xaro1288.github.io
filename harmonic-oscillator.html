@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dampened & Driven Harmonic Oscillator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        iframe {
+            width: 100%;
+            height: 700px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .back-link {
+            margin-top: 20px;
+            text-align: center;
+        }
+        a {
+            color: #0366d6;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dampened & Driven Harmonic Oscillator</h1>
+        
+        <div class="description">
+            <p>This interactive tool visualizes the phase space behavior of a dampened and driven harmonic oscillator.</p>
+            <p><strong>Parameters:</strong></p>
+            <ul>
+                <li><strong>γ (gamma)</strong> - Damping coefficient (0.01 to 2)</li>
+                <li><strong>ω (omega)</strong> - Driving frequency (0.1 to 5)</li>
+                <li><strong>F₀</strong> - Driving force amplitude (0 to 5)</li>
+                <li><strong>k</strong> - Spring constant (0 to 5)</li>
+                <li><strong>m</strong> - Mass (0.1 to 5)</li>
+            </ul>
+            <p>Use the sliders below to adjust parameters and observe how the phase space trajectory changes in real-time.</p>
+        </div>
+
+        <iframe src="https://www.wolframcloud.com/obj/up1084821/Published/Dampened_Driven-Harmonic.nb"></iframe>
+
+        <div class="back-link">
+            <a href="index.html">← Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>
