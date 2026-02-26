@@ -82,6 +82,10 @@
                 <label>Mass (m): <span id="v-m">1.0</span></label>
                 <input type="range" id="m" min="0.1" max="5" step="0.1" value="1">
             </div>
+            <div class="control-group">
+                <label>Zoom Level (Scale): <span id="v-scale">50</span></label>
+                <input type="range" id="scaleRange" min="5" max="150" step="1" value="50">
+            </div>
             <button onclick="resetPlot()">Reset (Reset Plot)</button>
         </div>
     </div>
@@ -93,7 +97,6 @@
         let x = 1, v = 0, t = 0;
         let dt = 0.02;
         let points = [];
-        const scale = 50; // Πόσο "μεγάλο" θα φαίνεται το γράφημα
 
         function resetPlot() {
             points = [];
@@ -109,6 +112,7 @@
             const F0 = parseFloat(document.getElementById('F0').value);
             const k = parseFloat(document.getElementById('k').value);
             const m = parseFloat(document.getElementById('m').value);
+            const scale = parseFloat(document.getElementById('scaleRange').value);
 
             // Ενημέρωση κειμένων
             document.getElementById('v-gam').innerText = gam.toFixed(2);
@@ -116,8 +120,9 @@
             document.getElementById('v-F0').innerText = F0.toFixed(1);
             document.getElementById('v-k').innerText = k.toFixed(1);
             document.getElementById('v-m').innerText = m.toFixed(1);
+            document.getElementById('v-scale').innerText = scale;
 
-            // Φυσική (Επίλυση με απλό ολοκληρωτή)
+            // Φυσική
             let force = F0 * Math.cos(om * t) - gam * v - k * x;
             let a = force / m;
             v += a * dt;
@@ -145,19 +150,21 @@
             ctx.beginPath(); ctx.moveTo(300, 0); ctx.lineTo(300, 400); ctx.stroke();
             ctx.fillText('Velocity (v)', 310, 20);
 
-            // Ticks και Αριθμοί
-            for (let i = -10; i <= 10; i++) {
+            // Ticks και Αριθμοί (Προσαρμοσμένα στο Zoom)
+            for (let i = -20; i <= 20; i++) {
                 if (i === 0) continue;
                 let tx = 300 + i * scale;
                 let ty = 200 - i * scale;
                 
-                // x-axis ticks
-                ctx.beginPath(); ctx.moveTo(tx, 197); ctx.lineTo(tx, 203); ctx.stroke();
-                if (i % 2 === 0) ctx.fillText(i, tx - 5, 215);
+                if (tx >= 0 && tx <= 600) {
+                    ctx.beginPath(); ctx.moveTo(tx, 197); ctx.lineTo(tx, 203); ctx.stroke();
+                    if (i % 2 === 0) ctx.fillText(i, tx - 5, 215);
+                }
 
-                // v-axis ticks
-                ctx.beginPath(); ctx.moveTo(297, ty); ctx.lineTo(303, ty); ctx.stroke();
-                if (i % 2 === 0) ctx.fillText(i, 280, ty + 5);
+                if (ty >= 0 && ty <= 400) {
+                    ctx.beginPath(); ctx.moveTo(297, ty); ctx.lineTo(303, ty); ctx.stroke();
+                    if (i % 2 === 0) ctx.fillText(i, 280, ty + 5);
+                }
             }
 
             // --- ΣΧΕΔΙΑΣΗ ΤΡΟΧΙΑΣ ---
