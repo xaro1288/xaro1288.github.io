@@ -13,17 +13,17 @@
 </head>
 <body>
 
-    <h2>Προσομοίωση Αρμονικού Ταλαντωτή (Phase Space)</h2>
-    <p>Αλλάξτε τις παραμέτρους για να δείτε την τροχιά</p>
+    <h2>Harmonic oscillator simulation (Phase Space)</h2>
+    <p>Change parameters for the trajectory</p>
     
     <canvas id="canvas" width="600" height="400"></canvas>
 
     <div class="controls">
-        <label>Απόσβεση (γ): <input type="range" id="gam" min="0" max="1" step="0.01" value="0.1"> <span id="v-gam">0.1</span></label>
-        <label>Συχνότητα (ω): <input type="range" id="om" min="0.1" max="5" step="0.1" value="1.5"> <span id="v-om">1.5</span></label>
-        <label>Εξωτερική Δύναμη (F0): <input type="range" id="F0" min="0" max="10" step="0.1" value="2"> <span id="v-F0">2</span></label>
-        <label>Σκληρότητα Ελατηρίου (k): <input type="range" id="k" min="0.1" max="10" step="0.1" value="2"> <span id="v-k">2</span></label>
-        <label>Μάζα (m): <input type="range" id="m" min="0.1" max="5" step="0.1" value="1"> <span id="v-m">1</span></label>
+        <label>Damping (γ): <input type="range" id="gam" min="0" max="1" step="0.01" value="0.1"> <span id="v-gam">0.1</span></label>
+        <label>Frequency (ω): <input type="range" id="om" min="0.1" max="5" step="0.1" value="1.5"> <span id="v-om">1.5</span></label>
+        <label>Force (F0): <input type="range" id="F0" min="0" max="10" step="0.1" value="2"> <span id="v-F0">2</span></label>
+        <label>Spring stiffness (k): <input type="range" id="k" min="0.1" max="10" step="0.1" value="2"> <span id="v-k">2</span></label>
+        <label>Mass (m): <input type="range" id="m" min="0.1" max="5" step="0.1" value="1"> <span id="v-m">1</span></label>
     </div>
 
     <script>
