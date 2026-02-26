@@ -57,4 +57,131 @@
 
     <div class="container">
         <h2>Προσομοίωση Αρμονικού Ταλαντωτή</h2>
-        <p style="color: #888;">Phase Space: Ταχύτητα (v) συνα
+        <p style="color: #888;">Phase Space: Ταχύτητα (v) συναρτήσει της Θέσης (x)</p>
+        
+        <canvas id="canvas" width="600" height="400"></canvas>
+
+        <div class="controls">
+            <div class="control-group">
+                <label>Dampening (γ): <span id="v-gam">0.10</span></label>
+                <input type="range" id="gam" min="0" max="1" step="0.01" value="0.1">
+            </div>
+            <div class="control-group">
+                <label>Angular frequency (ω): <span id="v-om">1.5</span></label>
+                <input type="range" id="om" min="0.1" max="5" step="0.1" value="1.5">
+            </div>
+            <div class="control-group">
+                <label>Force (F0): <span id="v-F0">2.0</span></label>
+                <input type="range" id="F0" min="0" max="10" step="0.1" value="2">
+            </div>
+            <div class="control-group">
+                <label>Spring stiffness (k): <span id="v-k">2.0</span></label>
+                <input type="range" id="k" min="0.1" max="10" step="0.1" value="2">
+            </div>
+            <div class="control-group">
+                <label>Mass (m): <span id="v-m">1.0</span></label>
+                <input type="range" id="m" min="0.1" max="5" step="0.1" value="1">
+            </div>
+            <button onclick="resetPlot()">Reset (Reset Plot)</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let x = 1, v = 0, t = 0;
+        let dt = 0.02;
+        let points = [];
+        const scale = 30; // Πόσο "μεγάλο" θα φαίνεται το γράφημα
+
+        function resetPlot() {
+            points = [];
+            x = 1;
+            v = 0;
+            t = 0;
+        }
+
+        function draw() {
+            // Λήψη τιμών
+            const gam = parseFloat(document.getElementById('gam').value);
+            const om = parseFloat(document.getElementById('om').value);
+            const F0 = parseFloat(document.getElementById('F0').value);
+            const k = parseFloat(document.getElementById('k').value);
+            const m = parseFloat(document.getElementById('m').value);
+
+            // Ενημέρωση κειμένων
+            document.getElementById('v-gam').innerText = gam.toFixed(2);
+            document.getElementById('v-om').innerText = om.toFixed(1);
+            document.getElementById('v-F0').innerText = F0.toFixed(1);
+            document.getElementById('v-k').innerText = k.toFixed(1);
+            document.getElementById('v-m').innerText = m.toFixed(1);
+
+            // Φυσική (Επίλυση με απλό ολοκληρωτή)
+            let force = F0 * Math.cos(om * t) - gam * v - k * x;
+            let a = force / m;
+            v += a * dt;
+            x += v * dt;
+            t += dt;
+
+            // Αποθήκευση σημείου
+            points.push({x, v});
+            if (points.length > 2000) points.shift();
+
+            // Καθαρισμός καμβά
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // --- ΣΧΕΔΙΑΣΗ ΑΞΟΝΩΝ ---
+            ctx.strokeStyle = '#444';
+            ctx.fillStyle = '#888';
+            ctx.font = '12px Arial';
+            ctx.lineWidth = 1;
+
+            // Οριζόντιος (x)
+            ctx.beginPath(); ctx.moveTo(0, 200); ctx.lineTo(600, 200); ctx.stroke();
+            ctx.fillText('Position (x)', 545, 190);
+
+            // Κάθετος (v)
+            ctx.beginPath(); ctx.moveTo(300, 0); ctx.lineTo(300, 400); ctx.stroke();
+            ctx.fillText('Velocity (v)', 310, 20);
+
+            // Ticks και Αριθμοί
+            for (let i = -10; i <= 10; i++) {
+                if (i === 0) continue;
+                let tx = 300 + i * scale;
+                let ty = 200 - i * scale;
+                
+                // x-axis ticks
+                ctx.beginPath(); ctx.moveTo(tx, 197); ctx.lineTo(tx, 203); ctx.stroke();
+                if (i % 2 === 0) ctx.fillText(i, tx - 5, 215);
+
+                // v-axis ticks
+                ctx.beginPath(); ctx.moveTo(297, ty); ctx.lineTo(303, ty); ctx.stroke();
+                if (i % 2 === 0) ctx.fillText(i, 280, ty + 5);
+            }
+
+            // --- ΣΧΕΔΙΑΣΗ ΤΡΟΧΙΑΣ ---
+            ctx.strokeStyle = '#00ffcc';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            for (let i = 0; i < points.length; i++) {
+                let px = 300 + points[i].x * scale;
+                let py = 200 - points[i].v * scale;
+                if (i === 0) ctx.moveTo(px, py);
+                else ctx.lineTo(px, py);
+            }
+            ctx.stroke();
+
+            // Η μπάλα (τρέχουσα κατάσταση)
+            ctx.fillStyle = '#ff4444';
+            ctx.beginPath();
+            ctx.arc(300 + x * scale, 200 - v * scale, 5, 0, Math.PI * 2);
+            ctx.fill();
+
+            requestAnimationFrame(draw);
+        }
+
+        draw();
+    </script>
+</body>
+</html>
