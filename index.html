@@ -1,73 +1,87 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="el">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dampened & Driven Harmonic Oscillator</title>
+    <title>Harmonic Oscillator Simulation</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        h1 {
-            color: #333;
-            text-align: center;
-        }
-        .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .description {
-            color: #666;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-        iframe {
-            width: 100%;
-            height: 700px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .back-link {
-            margin-top: 20px;
-            text-align: center;
-        }
-        a {
-            color: #0366d6;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
+        body { font-family: sans-serif; text-align: center; background: #1a1a1a; color: white; padding: 20px; }
+        canvas { background: #222; border: 2px solid #444; border-radius: 8px; cursor: crosshair; }
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 700px; margin: 20px auto; text-align: left; background: #333; padding: 20px; border-radius: 12px; }
+        input[type=range] { width: 100%; }
+        span { color: #00ffcc; font-weight: bold; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Dampened & Driven Harmonic Oscillator</h1>
-        
-        <div class="description">
-            <p>This interactive tool visualizes the phase space behavior of a dampened and driven harmonic oscillator.</p>
-            <p><strong>Parameters:</strong></p>
-            <ul>
-                <li><strong>γ (gamma)</strong> - Damping coefficient (0.01 to 2)</li>
-                <li><strong>ω (omega)</strong> - Driving frequency (0.1 to 5)</li>
-                <li><strong>F₀</strong> - Driving force amplitude (0 to 5)</li>
-                <li><strong>k</strong> - Spring constant (0 to 5)</li>
-                <li><strong>m</strong> - Mass (0.1 to 5)</li>
-            </ul>
-            <p>Use the sliders below to adjust parameters and observe how the phase space trajectory changes in real-time.</p>
-        </div>
 
-        <iframe src="https://www.wolframcloud.com/obj/up1084821/Published/Dampened_Driven-Harmonic.nb"></iframe>
+    <h2>Προσομοίωση Αρμονικού Ταλαντωτή (Phase Space)</h2>
+    <p>Αλλάξτε τις παραμέτρους για να δείτε την τροχιά</p>
+    
+    <canvas id="canvas" width="600" height="400"></canvas>
 
-        <div class="back-link">
-            <a href="index.html">← Back to Home</a>
-        </div>
+    <div class="controls">
+        <label>Απόσβεση (γ): <input type="range" id="gam" min="0" max="1" step="0.01" value="0.1"> <span id="v-gam">0.1</span></label>
+        <label>Συχνότητα (ω): <input type="range" id="om" min="0.1" max="5" step="0.1" value="1.5"> <span id="v-om">1.5</span></label>
+        <label>Εξωτερική Δύναμη (F0): <input type="range" id="F0" min="0" max="10" step="0.1" value="2"> <span id="v-F0">2</span></label>
+        <label>Σκληρότητα Ελατηρίου (k): <input type="range" id="k" min="0.1" max="10" step="0.1" value="2"> <span id="v-k">2</span></label>
+        <label>Μάζα (m): <input type="range" id="m" min="0.1" max="5" step="0.1" value="1"> <span id="v-m">1</span></label>
     </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let x = 1, v = 0, t = 0, dt = 0.02, points = [];
+
+        function animate() {
+            let gam = parseFloat(document.getElementById('gam').value);
+            let om = parseFloat(document.getElementById('om').value);
+            let F0 = parseFloat(document.getElementById('F0').value);
+            let k = parseFloat(document.getElementById('k').value);
+            let m = parseFloat(document.getElementById('m').value);
+
+            // Ενημέρωση αριθμών δίπλα στα sliders
+            document.getElementById('v-gam').innerText = gam;
+            document.getElementById('v-om').innerText = om;
+            document.getElementById('v-F0').innerText = F0;
+            document.getElementById('v-k').innerText = k;
+            document.getElementById('v-m').innerText = m;
+
+            // Φυσική (Runge-Kutta 2nd order approximation)
+            let a = (F0 * Math.cos(om * t) - gam * v - k * x) / m;
+            v += a * dt;
+            x += v * dt;
+            t += dt;
+
+            points.push({x, v});
+            if (points.length > 1500) points.shift();
+
+            // Σχεδίαση
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Άξονες
+            ctx.strokeStyle = '#444';
+            ctx.beginPath(); ctx.moveTo(300,0); ctx.lineTo(300,400); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(0,200); ctx.lineTo(600,200); ctx.stroke();
+
+            // Τροχιά
+            ctx.strokeStyle = '#00ffcc';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            points.forEach((p, i) => {
+                let px = 300 + p.x * 30;
+                let py = 200 - p.v * 30;
+                if(i===0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+            });
+            ctx.stroke();
+
+            // Μπάλα
+            ctx.fillStyle = '#ff4444';
+            ctx.beginPath();
+            ctx.arc(300 + x * 30, 200 - v * 30, 6, 0, Math.PI*2);
+            ctx.fill();
+
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
 </body>
 </html>
